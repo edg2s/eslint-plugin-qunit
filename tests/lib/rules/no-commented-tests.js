@@ -23,7 +23,14 @@ ruleTester.run("no-commented-tests", rule, {
         "QUnit.skip('Name', function () { ok(true); });",
 
         // shebang comments
-        "#!/some-test()"
+        "#!/some-test()",
+
+        // Not actually a commented test
+        "// TODO: Add test (ASAP)",
+        "// TODO: Add test (foo bar)",
+        "// TODO: Add test (unterminated-paren",
+        "// TODO: Add test ('unterminated quote)",
+        "// TODO: refactor with a Component test (instead of an Acceptance test)"
     ],
 
     invalid: [
@@ -283,6 +290,48 @@ ruleTester.run("no-commented-tests", rule, {
                     message: "Unexpected \"QUnit.skip\" in comment. Use QUnit.skip outside of a comment.",
                     line: 2,
                     column: 2
+                }
+            ]
+        },
+
+        // Not actually tests, but look too suspicious
+        {
+            code: "// Using backticks: test (`test`)",
+            errors: [
+                {
+                    message: "Unexpected \"test\" in comment. Use QUnit.skip outside of a comment.",
+                    line: 1,
+                    column: 21
+                }
+            ]
+        },
+        {
+            code: "// Using single quotes: test ('test')",
+            errors: [
+                {
+                    message: "Unexpected \"test\" in comment. Use QUnit.skip outside of a comment.",
+                    line: 1,
+                    column: 25
+                }
+            ]
+        },
+        {
+            code: "// Using double quotes: test (\"test\")",
+            errors: [
+                {
+                    message: "Unexpected \"test\" in comment. Use QUnit.skip outside of a comment.",
+                    line: 1,
+                    column: 25
+                }
+            ]
+        },
+        {
+            code: "// Possible multiple args?: test (foo, bar)",
+            errors: [
+                {
+                    message: "Unexpected \"test\" in comment. Use QUnit.skip outside of a comment.",
+                    line: 1,
+                    column: 29
                 }
             ]
         }
